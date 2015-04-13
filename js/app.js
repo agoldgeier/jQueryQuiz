@@ -1,5 +1,5 @@
 
-var quiz = {};
+var quiz = {}; // {"country" : {0: "capital 1", 1: "capital 1", ...},...}
 var curQuestion = 0;
 var curCorrect = 0;
 var length = 0;
@@ -27,6 +27,8 @@ $(document).ready( function () {
 	$(".answers").on("click", ".button", function() {
 		$(".selected").removeClass("selected");
 		$(this).addClass("selected");
+		var questions = Object.keys(quiz);
+		userAnswers[questions[curQuestion]] = $(this).text();
 	});
 
 	$("#prevButton").on("click", function() {
@@ -39,6 +41,32 @@ $(document).ready( function () {
 		if (curQuestion != length-1) {
 			loadQuestion(1);
 		}
+	});
+
+	$("#endQuiz").on("click", function() {
+		// generate score
+		curCorrect = 0;
+		for (var country in userAnswers) {
+			if (userAnswers[country] === answerKey[country]) {
+				curCorrect++;
+			}
+		}
+		// update score
+		$("#score").text(curCorrect + "/" + Object.keys(userAnswers).length);
+		$(".results").show();
+	});
+
+	$("#tryAgain").on("click", function() {
+		$(".results").hide();
+		curCorrect = 0;
+		curQuestion = 0;
+		userAnswers = {};
+		generateQuiz( answerKey );
+		loadQuestion(0);
+	});
+
+	$("#viewAnswers").on("click", function() {
+		alert("not implented yet!");
 	});
 
 });
@@ -83,7 +111,6 @@ var loadQuestion = function( questionDelta ) {
 	// store answer
 	var questions = Object.keys(quiz);
 	var curCountry = questions[curQuestion];
-	userAnswers[curCountry] = $(".selected").text();
 	// deselect answer button
 	$(".selected").removeClass("selected");
 	// set new question text

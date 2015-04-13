@@ -3,6 +3,10 @@ body {
 	font-family: "Helvetica";
 }
 
+.module {
+	position: relative;
+}
+
 .quiz {
 	margin-top: 100px;
 	margin-left: 25%;
@@ -12,6 +16,7 @@ body {
 	padding: 25px;
 	background-color: #E0EBFF;
 }
+
 
 ul {
 	list-style: none;
@@ -40,5 +45,31 @@ ul {
 	display: inline-flex;
 	margin-top: 10px;
 	margin: 5px;
+}
+
+
+.results {
+	display: none;
+	width: 30%;
+    position: absolute;
+    top: 40px;
+    margin-left: 35%;
+    margin-right: 35%;
+    z-index: 10;
+    border-radius: 10px;
+	border: 2px solid #0033CC;
+	padding: 25px;
+	background-color: #E0EBFF;
+}
+
+p {
+	text-align: center;
+	margin-bottom: 0px;
+	margin-top: 10px;
+}
+
+#score {
+	font-weight: bold;
+	font-size: 200%;
 }
 
