@@ -53,11 +53,13 @@ $(document).ready( function () {
 		}
 		// update score
 		$("#score").text(curCorrect + "/" + Object.keys(userAnswers).length);
-		$(".results").show();
+		$(".results-container").show();
+		// remove full results
+		$(".results-list").children().remove();
 	});
 
 	$("#tryAgain").on("click", function() {
-		$(".results").hide();
+		$(".results-container").hide();
 		curCorrect = 0;
 		curQuestion = 0;
 		userAnswers = {};
@@ -66,7 +68,7 @@ $(document).ready( function () {
 	});
 
 	$("#viewAnswers").on("click", function() {
-		alert("not implented yet!");
+		viewFullAnswers();
 	});
 
 });
@@ -106,14 +108,12 @@ var generateQuiz = function( answers ) {
 };
 
 var loadQuestion = function( questionDelta ) {
-	// check corner cases (disable buttons accordingly)
-
 	// store answer
 	var questions = Object.keys(quiz);
 	var curCountry = questions[curQuestion];
 	// deselect answer button
 	$(".selected").removeClass("selected");
-	// set new question text
+	// load new question
 	curQuestion = curQuestion + questionDelta;
 	curCountry = questions[curQuestion];
 	$(".question").text("What is the capital of " + questions[curQuestion]);
@@ -131,5 +131,64 @@ var loadQuestion = function( questionDelta ) {
 		$("#answer3").addClass("selected");
 	if (quiz[curCountry][3] === userAnswers[curCountry]) 
 		$("#answer4").addClass("selected");
+	// disable/enable nav buttons
+	if (curQuestion === 0)
+		$("#prevButton").hide();
+	else
+		$("#prevButton").show();
+	if (curQuestion === length-1)
+		$("#nextButton").hide();
+	else
+		$("#nextButton").show();
+};
+
+var viewFullAnswers = function() {
+	for (var country in userAnswers) {
+		// create new submittedAnswer object
+		var submittedAnswer = $("<li class='result'>");
+		var q = $("<div class='result-question'>");
+		q.text(country);
+
+		var a = $("<div class='result-answer-container'>");
+		var row1 = $("<div class='result-answer-row'>");
+		var a1 = $("<div class='result-answer'>");
+		var a2 = $("<div class='result-answer'>");
+		var row2 = $("<div class='result-answer-row'>");
+		var a3 = $("<div class='result-answer'>");
+		var a4 = $("<div class='result-answer'>");
+		a1.text(quiz[country][0]);
+		a2.text(quiz[country][1]);
+		a3.text(quiz[country][2]);
+		a4.text(quiz[country][3]);
+
+		var arr = [a1, a2, a3, a4];
+
+		for (var i in arr) {
+			var ans = arr[i];
+			if (ans.text() === userAnswers[country]) {
+				ans.addClass("incorrect");
+			}
+			if (ans.text() === answerKey[country]) {
+				ans.removeClass("incorrect");
+				ans.addClass("correct");
+			}
+		}
+
+		row1.append(a1);
+		row1.append(a2);
+		row2.append(a3);
+		row2.append(a4);
+
+		a.append(row1);
+		a.append(row2);
+
+		submittedAnswer.append(q);
+		submittedAnswer.append(a);
+
+		//
+		$(".results-list").append(submittedAnswer);
+
+	}
+	$(".results-list").show();
 };
 
