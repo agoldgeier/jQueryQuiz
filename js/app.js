@@ -10,7 +10,7 @@ $(document).ready( function () {
 	generateQuiz( answerKey );
 	var numQuestions = quiz.length;
 
-	console.log(quiz);
+	//console.log(quiz);
 
 	loadQuestion(0);
 
@@ -83,11 +83,15 @@ var generateQuiz = function( answers ) {
 	// as the value.
 
 	var countries = Object.keys( answers );
+	// randomize order of questions
+	countries = shuffle(countries);
+
 	length = countries.length;
 
-	console.log(answers);
+	//console.log(answers);
 
-	for (var country in answers) {
+	for (var i in countries) {
+		country = countries[i];
 		var capital = answers[country];
 		var correct = Math.floor(Math.random()*4);
 		var answerSet = {};
@@ -118,19 +122,15 @@ var loadQuestion = function( questionDelta ) {
 	curCountry = questions[curQuestion];
 	$(".question").text("What is the capital of " + questions[curQuestion]);
 	// set new answer text
-	$("#answer1").text(quiz[curCountry][0]);
-	$("#answer2").text(quiz[curCountry][1]);
-	$("#answer3").text(quiz[curCountry][2]);
-	$("#answer4").text(quiz[curCountry][3]);
-	// if question has been answered, reload that answer
-	if (quiz[curCountry][0] === userAnswers[curCountry])
-		$("#answer1").addClass("selected");
-	if (quiz[curCountry][1] === userAnswers[curCountry]) 
-		$("#answer2").addClass("selected");
-	if (quiz[curCountry][2] === userAnswers[curCountry]) 
-		$("#answer3").addClass("selected");
-	if (quiz[curCountry][3] === userAnswers[curCountry]) 
-		$("#answer4").addClass("selected");
+	var answerIDs = ["#answer1", "#answer2", "#answer3", "#answer4"];
+	for (var i = 0; i < 4; i++) {
+		// load answer text
+		$(answerIDs[i]).text(quiz[curCountry][i]);
+		// if answer was selected and saved, reselect
+		if (quiz[curCountry][i] === userAnswers[curCountry]) {
+			$(answerIDs[i]).addClass("selected");
+		}
+	}
 	// disable/enable nav buttons
 	if (curQuestion === 0)
 		$("#prevButton").hide();
@@ -156,15 +156,12 @@ var viewFullAnswers = function() {
 		var row2 = $("<div class='result-answer-row'>");
 		var a3 = $("<div class='result-answer'>");
 		var a4 = $("<div class='result-answer'>");
-		a1.text(quiz[country][0]);
-		a2.text(quiz[country][1]);
-		a3.text(quiz[country][2]);
-		a4.text(quiz[country][3]);
 
 		var arr = [a1, a2, a3, a4];
 
 		for (var i in arr) {
 			var ans = arr[i];
+			ans.text(quiz[country][i]);
 			if (ans.text() === userAnswers[country]) {
 				ans.addClass("incorrect");
 			}
@@ -185,10 +182,30 @@ var viewFullAnswers = function() {
 		submittedAnswer.append(q);
 		submittedAnswer.append(a);
 
-		//
 		$(".results-list").append(submittedAnswer);
 
 	}
 	$(".results-list").show();
 };
 
+
+// Array shuffler! 
+// https://github.com/coolaj86/knuth-shuffle
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
